@@ -41,6 +41,7 @@ class UploadEvent(db.Model):
     mimetype and date."""
     user = db.UserProperty()
     filename = db.StringProperty()
+    file_url = db.StringProperty()
     mimetype = db.StringProperty()
     date = db.DateTimeProperty(auto_now_add=True)
 
@@ -79,10 +80,12 @@ class UploadSample(webapp.RequestHandler):
         mimetype=mimetype,
         data=image)
 
-    event.put()
     redirect_url = '/upload'
     if image:
        redirect_url += '?'+urllib.urlencode({'file_url': f.file_url})
+       event.file_url = f.file_url
+
+    event.put()
     self.redirect(redirect_url)
 
 app = webapp.WSGIApplication([
