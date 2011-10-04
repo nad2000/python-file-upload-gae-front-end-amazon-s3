@@ -1,0 +1,14 @@
+<html>
+	<body>
+		<form action="/save" enctype="multipart/form-data" method="post">
+            <div><label>File:</label></div>
+            <div><input type="file" name="img"/></div>
+            <div><input type="submit" value="Save" /></div>
+		</form>
+		<hr />
+		{% if file_url %}
+		<a href="{{ file_url }}">{{ file_url }}</a>
+		{% endif %}
+	</body>
+</html>
+

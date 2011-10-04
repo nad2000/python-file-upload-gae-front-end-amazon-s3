@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/71/FILEUPLOAD/trunk/simples3
+END
+streaming.py
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/71/FILEUPLOAD/trunk/simples3/streaming.py
+END
+gae.py
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/71/FILEUPLOAD/trunk/simples3/gae.py
+END
+bucket.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/71/FILEUPLOAD/trunk/simples3/bucket.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/71/FILEUPLOAD/trunk/simples3/__init__.py
+END
+utils.py
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/71/FILEUPLOAD/trunk/simples3/utils.py
+END
