@@ -13,9 +13,9 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
 
 class S3File:
-  bucket = 'nad2000-test'
-  access_key='AKIAJHBAZAVUBQINT3ZA'
-  secret_key='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'
+  bucket = 'mm.la'
+  access_key='AKIAIE4XT3OMSMEGXHZQ'
+  secret_key='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'
   _bucket = None
 
   def get_bucket( self):
