@@ -1,11 +1,7 @@
-K 26
-svn:wc:ra_dav:activity-url
-V 14
-/svn/!svn/act/
 K 25
 svn:wc:ra_dav:version-url
 V 33
-/svn/!svn/ver/70/FILEUPLOAD/trunk
+/svn/!svn/ver/72/FILEUPLOAD/trunk
 END
 app.yaml
 K 25
