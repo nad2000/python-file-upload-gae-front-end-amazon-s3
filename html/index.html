@@ -2,14 +2,14 @@
 <html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
-<title>Amazon S3 File Upload</title>
+<title>S3 File Uploader</title>
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" id="theme">
-<link rel="stylesheet" href="js/jquery.fileupload/jquery.fileupload-ui.css">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="/js/jquery.fileupload/jquery.fileupload-ui.css">
+<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <div id="fileupload">
-    <form action="/pyinfo" method="POST" enctype="multipart/form-data">
+    <form action="upload.php" method="POST" enctype="multipart/form-data">
         <div class="fileupload-buttonbar">
             <label class="fileinput-button">
                 <span>Add files...</span>
@@ -26,18 +26,18 @@
     </div>
 </div>
 <script id="template-upload" type="text/x-jquery-tmpl">
-    <tr class="template-upload{% if error %} ui-state-error{% endif %}">
+    <tr class="template-upload{{if error}} ui-state-error{{/if}}">
         <td class="preview"></td>
-        <td class="name">{{name}}</td>
+        <td class="name">${name}</td>
         <td class="size">${sizef}</td>
-        {% if error %}
+        {{if error}}
             <td class="error" colspan="2">Error:
-                {% if error == 'maxFileSize' %}File is too big
-                {% else error == 'minFileSize' %}File is too small
-                {% else error == 'acceptFileTypes' %}Filetype not allowed
-                {% else error == 'maxNumberOfFiles' %}Max number of files exceeded
-                {% else %}{{error}}
-                {% endif %}
+                {{if error === 'maxFileSize'}}File is too big
+                {{else error === 'minFileSize'}}File is too small
+                {{else error === 'acceptFileTypes'}}Filetype not allowed
+                {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
+                {{else}}${error}
+                {{/if}}
             </td>
         {{else}}
             <td class="progress"><div></div></td>
@@ -89,9 +89,9 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 <script src="//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-<script src="jquery.fileupload/jquery.iframe-transport.js"></script>
-<script src="jquery.fileupload/jquery.fileupload.js"></script>
-<script src="jquery.fileupload/jquery.fileupload-ui.js"></script>
-<script src="js/application.js"></script>
+<script src="/js/jquery.fileupload/jquery.iframe-transport.js"></script>
+<script src="/js/jquery.fileupload/jquery.fileupload.js"></script>
+<script src="/js/jquery.fileupload/jquery.fileupload-ui.js"></script>
+<script src="/js/application.js"></script>
 </body>
 </html>

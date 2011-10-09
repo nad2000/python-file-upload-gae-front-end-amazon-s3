@@ -4,6 +4,8 @@ version: 1
 runtime: python
 api_version: 1
 
+#default_expiration: "1d"
+
 handlers:
 
 - url: /js
@@ -18,6 +20,11 @@ handlers:
 - url: /favicon.ico
   static_files: favicon.ico
   upload: favicon.ico
+  # expiration: "100 d"
+
+- url: /(.*\.html)
+  static_files: html/\1
+  upload: html/(.*\.html)
 
 - url: /.*
   script: app.py

@@ -8,7 +8,7 @@ from simples3.gae import AppEngineS3Bucket
 
 from google.appengine.ext import db
 from google.appengine.api import users
-import webapp2 as webapp # from google.appengine.ext import webapp
+from google.appengine.ext import webapp # import webapp2 as webapp #
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
 
@@ -17,7 +17,7 @@ def set_trace():
     if os.environ['SERVER_NAME'] != 'localhost':
         return
     import pdb, sys
-    debugger = pdb.Pdb(stdin=sys.__stdin__, 
+    debugger = pdb.Pdb(stdin=sys.__stdin__,
         stdout=sys.__stdout__)
     debugger.set_trace(sys._getframe().f_back)
 
@@ -54,24 +54,26 @@ class UploadEvent(db.Model):
     mimetype = db.StringProperty()
     date = db.DateTimeProperty(auto_now_add=True)
 
+class RequestHandler(webapp.RequestHandler):
+  def render( self, template_name, template_values = None):
+    path = os.path.join(os.path.dirname(__file__), template_name )
+    self.response.out.write(template.render(path, template_values))
 
 class MainPage(webapp.RequestHandler):
   def get(self):
-    # todo:
-    pass
+    self.redirect('index.html')
 
-class UploadSample(webapp.RequestHandler):
+class UploadSample(RequestHandler):
 
   def get(self):
     upload_query = UploadEvent.all().order('-date')
     uploads = upload_query.fetch(10)
-    set_trace()
+    #set_trace()
     template_values = {
       'file_url': self.request.get('file_url'),
       'uploads': uploads
     }
-    path = os.path.join(os.path.dirname(__file__), 'upload.html')
-    self.response.out.write(template.render(path, template_values))
+    self.render( 'upload.html', template_values)
 
   def post(self):
     user = users.get_current_user()
@@ -100,11 +102,35 @@ class UploadSample(webapp.RequestHandler):
 
     event.put()
     self.redirect(redirect_url)
-    
+
 class PrintEnvironmentHandler(webapp.RequestHandler):
     def get(self):
         for name in os.environ.keys():
-            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))    
+            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))
+
+
+class UploadHandler(webapp.RequestHandler):
+
+  def initialize(self, request, response):
+    webapp.RequestHandler.initialize(request, response)
+    response.headers.add_header('Pragma', 'no-cache')
+    response.headers.add_header('Cache-Control', 'private, no-cache')
+    response.headers.add_header('Content-Disposition', 'inline', filename='files.json')
+    response.headers.add_header('X-Content-Type-Options', 'nosniff')
+    #from django.utils import simplejson
+    import simplejson as json
+
+  def head(self):
+    self.get()
+
+  def get(self):
+    pass
+
+  def post(self):
+    pass
+
+  def delete(self):
+    pass
 
 app = webapp.WSGIApplication([
   ('/', MainPage),
