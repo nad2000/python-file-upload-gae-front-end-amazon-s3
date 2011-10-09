@@ -10,8 +10,9 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext import webapp # import webapp2 as webapp #
 from google.appengine.ext.webapp.util import run_wsgi_app
-#from google.appengine.ext.webapp import template
-from django import template
+from google.appengine.ext.webapp import template
+import simplejson as json
+
 
 def set_trace():
     # ignore, if it's not "localhost"
@@ -47,13 +48,22 @@ class S3File:
     self.file_url = self.base_url+'/'+filename
 
 class UploadEvent(db.Model):
-    """Models an individual event entry with an file name, user submitting the file,
-    mimetype and date."""
-    user = db.UserProperty()
-    filename = db.StringProperty()
-    file_url = db.StringProperty()
-    mimetype = db.StringProperty()
-    date = db.DateTimeProperty(auto_now_add=True)
+  """Models an individual event entry with an file name, user submitting the file,
+  mimetype and date."""
+  user = db.UserProperty()
+  filename = db.StringProperty()
+  file_url = db.StringProperty()
+  mimetype = db.StringProperty()
+  date = db.DateTimeProperty(auto_now_add=True)
+
+class UploadedFile(db.Model):
+  """Models an individual uploaded file."""
+  user = db.UserProperty()
+  filename = db.StringProperty()
+  size = db.IntegerProperty()
+  url = db.StringProperty()
+  mimetype = db.StringProperty()
+  date = db.DateTimeProperty(auto_now_add=True)
 
 class RequestHandler(webapp.RequestHandler):
   def render( self, template_name, template_values = None):
@@ -113,29 +123,82 @@ class PrintEnvironmentHandler(webapp.RequestHandler):
 class UploadHandler(webapp.RequestHandler):
 
   def initialize(self, request, response):
-    webapp.RequestHandler.initialize(request, response)
+    webapp.RequestHandler.initialize(self, request, response)
     response.headers.add_header('Pragma', 'no-cache')
     response.headers.add_header('Cache-Control', 'private, no-cache')
     response.headers.add_header('Content-Disposition', 'inline', filename='files.json')
     response.headers.add_header('X-Content-Type-Options', 'nosniff')
     #from django.utils import simplejson
-    import simplejson as json
+    #import simplejson as json
+
+  def get_file_objects(self, file_name = None):
+    file_qry = UploadedFile.all().order('-date')
+    if file_name:
+      file_qry.filter('name =', file_name)
+    return [
+      {
+        'name': f.filename,
+        'type': f.mimetype,
+        'size': f.size,
+        'url': f.url,
+        'delete_url': self.request.path+'?'+urllib.urlencode({'file': f.filename}),
+        'delete_type': 'DELETE'
+      }
+     for f in file_qry]
 
   def head(self):
     self.get()
 
   def get(self):
-    pass
+    "Retrieves file list or a single fine info "
+    file = self.request.get('file')
+    if file:
+      info = self.get_file_objects( file)
+    else:
+      info = self.get_file_objects()
+    self.response.headers.add_header('Content-type', 'application/json')
+    json.dump( info, self.response.out)
 
   def post(self):
-    pass
+    #pprint.pprint(self.request.POST.get('files[]'))
+    #return
+    user = users.get_current_user()
+    filename = self.request.POST.get('files[]').filename
+    mimetype = self.request.POST.get('files[]').type
+    content = self.request.get('files[]')
+    size = len(content)
+
+    uf = UploadedFile()
+    uf.user = user
+    uf.filename = filename
+    uf.miletype = mimetype
+    uf.size = size
+
+    if content:
+      f = S3File()
+      f.save(
+        filename=filename,
+        mimetype=mimetype,
+        data=content)
+      uf.file_url = f.file_url
+
+    uf.put()
+    json.dump( [{
+      'name': filename,
+      'type': mimetype,
+      'size': size,
+      'url': f.file_url,
+      'delete_url': self.request.path+'?'+urllib.urlencode({'file': filename}),
+      'delete_type': 'DELETE'
+    }] , self.response.out )
+
 
   def delete(self):
     pass
 
 app = webapp.WSGIApplication([
   ('/', MainPage),
-  ('/upload', UploadSample),
+  ('/upload', UploadHandler),
   ('/save', UploadSample),
   ('/pyinfo', PrintEnvironmentHandler)
 ], debug=True)
@@ -143,7 +206,6 @@ app = webapp.WSGIApplication([
 
 def main():
   run_wsgi_app(app)
-
 
 if __name__ == '__main__':
   main()

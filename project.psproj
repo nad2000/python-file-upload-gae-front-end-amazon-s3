@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.4.4.0
+Version=2.4.3.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -13,8 +13,24 @@ ClassName=TProjectFilesNode
 ClassName=TProjectFileNode
 FileName=$[Project-Path]app.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]app.yaml
+
+[Project\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]js\application.js
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]html\index.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]upload.html
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=1
+Count=5
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
