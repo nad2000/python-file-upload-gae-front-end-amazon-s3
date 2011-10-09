@@ -10,7 +10,8 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext import webapp # import webapp2 as webapp #
 from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.ext.webapp import template
+#from google.appengine.ext.webapp import template
+from django import template
 
 def set_trace():
     # ignore, if it's not "localhost"
