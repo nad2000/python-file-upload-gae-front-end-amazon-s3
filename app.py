@@ -180,7 +180,7 @@ class UploadHandler(webapp.RequestHandler):
         filename=filename,
         mimetype=mimetype,
         data=content)
-      uf.file_url = f.file_url
+      uf.url = f.file_url
 
     uf.put()
     json.dump( [{

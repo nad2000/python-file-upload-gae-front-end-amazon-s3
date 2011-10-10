@@ -1,14 +1,3 @@
-/*
- * jQuery File Upload Plugin JS Example 5.0.2
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2010, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://creativecommons.org/licenses/MIT/
- */
-
 /*jslint nomen: true */
 /*global $ */
 
@@ -16,7 +5,7 @@ $(function () {
     'use strict';
 
     // Initialize the jQuery File Upload widget:
-    $('#fileupload').fileupload();
+    $('#fileupload').fileupload({ autoUpload: true});
 
     // Load existing files:
     $.getJSON($('#fileupload form').prop('action'), function (files) {
