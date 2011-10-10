@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=2.4.3.0
+Version=2.4.4.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -19,11 +19,11 @@ FileName=$[Project-Path]app.yaml
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]js\application.js
+FileName=$[Project-Path]html\index.html
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]html\index.html
+FileName=$[Project-Path]raw_tag.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
@@ -42,6 +42,7 @@ Count=2
 Item0=E:\google_appengine
 Item1=E:\google_appengine\lib
 Item2=E:\google_appengine\lib\webob
-Item3=.\
-Count=4
+Item3=E:\google_appengine\google
+Item4=.\
+Count=5
 

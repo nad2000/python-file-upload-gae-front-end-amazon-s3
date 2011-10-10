@@ -8,28 +8,37 @@ from simples3.gae import AppEngineS3Bucket
 
 from google.appengine.ext import db
 from google.appengine.api import users
-from google.appengine.ext import webapp # import webapp2 as webapp #
+from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
 import simplejson as json
 
-
 def set_trace():
-    # ignore, if it's not "localhost"
-    if os.environ['SERVER_NAME'] != 'localhost':
-        return
-    import pdb, sys
-    debugger = pdb.Pdb(stdin=sys.__stdin__,
-        stdout=sys.__stdout__)
-    debugger.set_trace(sys._getframe().f_back)
+  """
+  Support for debugging GAE application.
+  Alsternatively you can start debugging running:
+  python -m pdb google_appengine/dev_appserver.py <app dir>
+  """
+  # ignore, if it's not "localhost"
+  if os.environ['SERVER_NAME'] != 'localhost':
+      return
+  import pdb, sys
+  debugger = pdb.Pdb(stdin=sys.__stdin__,
+      stdout=sys.__stdout__)
+  debugger.set_trace(sys._getframe().f_back)
 
 class S3File:
+  """Encapsulates S3 storage management"""
   bucket = 'mm.la'
   access_key='AKIAIE4XT3OMSMEGXHZQ'
   secret_key='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'
   _bucket = None
 
   def get_bucket( self):
+    """S3 bucket lazy loading.
+
+    Returns:
+      S3 bucket"""
     if not( self._bucket):
       self._bucket = AppEngineS3Bucket(
         name = self.bucket,
@@ -39,6 +48,12 @@ class S3File:
     return self._bucket
 
   def save( self, filename, data, mimetype):
+    """Created S3 file with supplied properties.
+
+    Arguments:
+      filename: file name
+      data: file content
+      mimetype: file MIME type"""
     s = self.get_bucket()
     s.put(
       key=filename,
@@ -47,14 +62,10 @@ class S3File:
       acl="public-read" )
     self.file_url = self.base_url+'/'+filename
 
-class UploadEvent(db.Model):
-  """Models an individual event entry with an file name, user submitting the file,
-  mimetype and date."""
-  user = db.UserProperty()
-  filename = db.StringProperty()
-  file_url = db.StringProperty()
-  mimetype = db.StringProperty()
-  date = db.DateTimeProperty(auto_now_add=True)
+  def delete(self, filename):
+    """Discard file form the S3 bucket."""
+    b = self.get_bucket()
+    b.delete( filename)
 
 class UploadedFile(db.Model):
   """Models an individual uploaded file."""
@@ -66,75 +77,54 @@ class UploadedFile(db.Model):
   date = db.DateTimeProperty(auto_now_add=True)
 
 class RequestHandler(webapp.RequestHandler):
-  def render( self, template_name, template_values = None):
+  """Application Request Handler base. Place for implementation
+  of common functions of the application handlers."""
+  def render( self, template_name, template_values = None, debug=False):
+    """Renders the template with the given dict of values and outputs
+    the rendered content to the response.
+
+    Example usage:
+      render("index.html", {"name": "Robert Hunt", "values": [1, 2, 3]})
+
+    Arguments:
+      template_name: a name of a Django template
+      template_values: dictionary of values to apply to the template
+      debug: debugging flag
+    """
+    if not(template_values):
+      template_values = {}
     path = os.path.join(os.path.dirname(__file__), template_name )
-    self.response.out.write(template.render(path, template_values))
+    self.response.out.write(template.render(path, template_values, debug))
 
 class MainPage(webapp.RequestHandler):
+  """Application default handler."""
   def get(self):
+    """Redirects to the static page."""
     self.redirect('index.html')
 
-class UploadSample(RequestHandler):
-
+class PyInfoHandler(webapp.RequestHandler):
+  """Handler outputs information about the current state of the environment."""
   def get(self):
-    upload_query = UploadEvent.all().order('-date')
-    uploads = upload_query.fetch(10)
-    #set_trace()
-    template_values = {
-      'file_url': self.request.get('file_url'),
-      'uploads': uploads
-    }
-    self.render( 'upload.html', template_values)
-
-  def post(self):
-    user = users.get_current_user()
-    filename = self.request.POST.get('img').filename
-    mimetype = self.request.POST.get('img').type
-    image = self.request.get("img")
-
-    event = UploadEvent()
-    event.user = user
-    event.filename = filename
-    event.mimetype = mimetype
-
-    image = self.request.get("img")
-
-    if image:
-      f = S3File()
-      f.save(
-        filename=filename,
-        mimetype=mimetype,
-        data=image)
-
-    redirect_url = '/upload'
-    if image:
-       redirect_url += '?'+urllib.urlencode({'file_url': f.file_url})
-       event.file_url = f.file_url
-
-    event.put()
-    self.redirect(redirect_url)
-
-class PrintEnvironmentHandler(webapp.RequestHandler):
-    def get(self):
-        for name in os.environ.keys():
-            self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))
+    for name in os.environ.keys():
+      self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))
 
 
 class UploadHandler(webapp.RequestHandler):
+  """File upload handler."""
 
   def initialize(self, request, response):
+    """webapp.RequestHandler handler initialization extension."""
     webapp.RequestHandler.initialize(self, request, response)
     response.headers.add_header('Pragma', 'no-cache')
     response.headers.add_header('Cache-Control', 'private, no-cache')
     response.headers.add_header('Content-Disposition', 'inline', filename='files.json')
     response.headers.add_header('X-Content-Type-Options', 'nosniff')
-    #from django.utils import simplejson
-    #import simplejson as json
 
-  def get_file_objects(self, file_name = None):
+  def get_file_objects(self, filename = None):
+    """Creats file object for including into JSON feed."""
     file_qry = UploadedFile.all().order('-date')
-    if file_name:
-      file_qry.filter('name =', file_name)
+    if filename:
+      file_qry.filter('filename =', filename)
     return [
       {
         'name': f.filename,
@@ -150,18 +140,20 @@ class UploadHandler(webapp.RequestHandler):
     self.get()
 
   def get(self):
-    "Retrieves file list or a single fine info "
-    file = self.request.get('file')
-    if file:
-      info = self.get_file_objects( file)
+    """Retrieves file list or a single file info"""
+    filename = self.request.get('file')
+    if filename:
+      info = self.get_file_objects( filename)
     else:
       info = self.get_file_objects()
     self.response.headers.add_header('Content-type', 'application/json')
     json.dump( info, self.response.out)
 
   def post(self):
-    #pprint.pprint(self.request.POST.get('files[]'))
-    #return
+    """Handle file upload:
+      - dowload the file;
+      - uploads the file to Amazon S3;
+      - stores meta data into the store."""
     user = users.get_current_user()
     filename = self.request.POST.get('files[]').filename
     mimetype = self.request.POST.get('files[]').type
@@ -192,15 +184,26 @@ class UploadHandler(webapp.RequestHandler):
       'delete_type': 'DELETE'
     }] , self.response.out )
 
-
   def delete(self):
-    pass
+    """Delete file form the store."""
+    filename = self.request.get('file')
+    success = (filename != None)
+    if success:
+      try:
+        s3f = S3File()
+        s3f.delete( filename=filename )
+      except:
+        pass
+      file_qry = UploadedFile.all().filter('filename =', filename)
+      for f in file_qry:
+        f.delete()
+    self.response.headers.add_header('Content-type', 'application/json')
+    json.dump( success, self.response.out)
 
 app = webapp.WSGIApplication([
   ('/', MainPage),
   ('/upload', UploadHandler),
-  ('/save', UploadSample),
-  ('/pyinfo', PrintEnvironmentHandler)
+  ('/pyinfo', PyInfoHandler)
 ], debug=True)
 
 
