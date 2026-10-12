@@ -30,8 +30,8 @@ def set_trace():
 class S3File:
   """Encapsulates S3 storage management"""
   bucket = 'mm.la'
-  access_key='AKIAIE4XT3OMSMEGXHZQ'
-  secret_key='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'
+  access_key='===KEY REMOVED==='
+  secret_key='===SECRET REMOVED==='
   _bucket = None
 
   def get_bucket( self):
