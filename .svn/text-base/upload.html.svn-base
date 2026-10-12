@@ -1,4 +1,8 @@
 <html>
+    <header>
+        <link rel="icon" type="image/ico" href="/favicon.ico"/>
+        <link rel="shortcut icon" type="image/ico" href="/favicon.ico"/>    
+    </header>
 	<body>
 		<form action="/save" enctype="multipart/form-data" method="post">
             <div><label>File:</label></div>
@@ -8,6 +12,17 @@
 		<hr />
 		{% if file_url %}
 		<a href="{{ file_url }}">{{ file_url }}</a>
+		{% endif %}
+		{% if uploads %}
+		<table>
+		    {% for upload in uploads %}
+            <tr>
+                <td>{{ upload.date }}</td>
+                <td><a href="{{ upload.file_url }}">{{ upload.file_url }}</a></td>
+                <td>{{ upload.mimetype }}</td>
+            </tr>
+            {% endfor %}
+		</table>
 		{% endif %}
 	</body>
 </html>

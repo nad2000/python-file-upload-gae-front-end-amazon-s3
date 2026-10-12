@@ -7,25 +7,25 @@ app.yaml
 K 25
 svn:wc:ra_dav:version-url
 V 42
-/svn/!svn/ver/71/FILEUPLOAD/trunk/app.yaml
+/svn/!svn/ver/76/FILEUPLOAD/trunk/app.yaml
 END
 project.psproj
 K 25
 svn:wc:ra_dav:version-url
 V 48
-/svn/!svn/ver/71/FILEUPLOAD/trunk/project.psproj
+/svn/!svn/ver/76/FILEUPLOAD/trunk/project.psproj
 END
 app.py
 K 25
 svn:wc:ra_dav:version-url
 V 40
-/svn/!svn/ver/71/FILEUPLOAD/trunk/app.py
+/svn/!svn/ver/76/FILEUPLOAD/trunk/app.py
 END
 upload.html
 K 25
 svn:wc:ra_dav:version-url
 V 45
-/svn/!svn/ver/71/FILEUPLOAD/trunk/upload.html
+/svn/!svn/ver/76/FILEUPLOAD/trunk/upload.html
 END
 index.yaml
 K 25
@@ -33,9 +33,9 @@ svn:wc:ra_dav:version-url
 V 44
 /svn/!svn/ver/71/FILEUPLOAD/trunk/index.yaml
 END
-index.html
+favicon.ico
 K 25
 svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/71/FILEUPLOAD/trunk/index.html
+V 45
+/svn/!svn/ver/76/FILEUPLOAD/trunk/favicon.ico
 END

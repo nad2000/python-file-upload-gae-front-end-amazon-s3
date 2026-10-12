@@ -13,8 +13,24 @@ ClassName=TProjectFilesNode
 ClassName=TProjectFileNode
 FileName=$[Project-Path]app.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node1]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]app.yaml
+
+[Project\ChildNodes\Node0\ChildNodes\Node2]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]html\index.html
+
+[Project\ChildNodes\Node0\ChildNodes\Node3]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]raw_tag.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node4]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]upload.html
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=1
+Count=5
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
@@ -26,6 +42,7 @@ Count=2
 Item0=E:\google_appengine
 Item1=E:\google_appengine\lib
 Item2=E:\google_appengine\lib\webob
-Item3=.\
-Count=4
+Item3=E:\google_appengine\google
+Item4=.\
+Count=5
 
